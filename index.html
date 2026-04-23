@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elas Cientistas - Quiz</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#7463C3">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================
+           CSS GERAL E RESET
+           ========================================= */
+        :root {
+            --primary: #7463C3;
+            --primary-dark: #4b3d8a;
+            --secondary-1: #F48E54;
+            --secondary-2: #EC9A3A;
+            --danger: #e74c3c; 
+            --success: #2ecc71;
+            --bg-light: #f8f7fc;
+            --text-main: #2d2a38;
+            --text-muted: #8b8798;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light); 
+            color: var(--text-main);
+            overflow: hidden; 
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Classes utilitárias para esconder/mostrar áreas com suavidade */
+        .hidden { display: none !important; }
+        .fade-in { animation: smoothEnter 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        @keyframes smoothEnter {
+            from { opacity: 0; transform: translateY(20px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* =========================================
+           PÁGINA INICIAL FULL-SCREEN (CINEMÁTICA)
+           ========================================= */
+        #landing-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            background: linear-gradient(135deg, #3a2e70 0%, var(--primary) 50%, #221a42 100%);
+            z-index: 100;
+            transition: opacity 0.8s cubic-bezier(0.7, 0, 0.3, 1), transform 0.8s cubic-bezier(0.7, 0, 0.3, 1), visibility 0.8s;
+        }
+
+        .ambient-glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: 0;
+            opacity: 0.5;
+            pointer-events: none;
+            animation: drift 10s infinite alternate ease-in-out;
+        }
+
+        .glow-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: var(--secondary-1); }
+        .glow-2 { bottom: -10%; right: -10%; width: 40vw; height: 40vw; background: #9b59b6; }
+        .glow-3 { top: 40%; left: 40%; width: 30vw; height: 30vw; background: #ffffff; opacity: 0.1; }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, -30px) scale(1.1); }
+        }
+
+        @keyframes floatUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .landing-title {
+            font-size: 5.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -2px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+            animation: floatUp 1s cubic-bezier(0.16, 1, 0.3, 1);
+            text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .landing-subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 70px;
+            position: relative;
+            z-index: 2;
+            animation: floatUp 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* --- ANIMAÇÃO CENTRAL --- */
+        .science-animation-container {
+            position: relative;
+            width: 350px;
+            height: 350px;
+            margin-bottom: 70px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: floatUp 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .orbit-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .orbit-ring-1 { width: 160px; height: 160px; }
+        .orbit-ring-2 { width: 260px; height: 260px; }
+        .orbit-ring-3 { width: 360px; height: 360px; }
+        .orbit-ring-4 { width: 460px; height: 460px; }
+
+        .central-core {
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle at 30% 30%, #ffd0b3, var(--secondary-1));
+            border-radius: 50%;
+            position: absolute;
+            z-index: 10;
+            box-shadow: 0 0 40px rgba(244, 142, 84, 0.6), inset 0 -4px 8px rgba(0,0,0,0.2);
+            animation: corePulse 3s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes corePulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 25px rgba(244, 142, 84, 0.4); }
+            100% { transform: scale(1.05); box-shadow: 0 0 55px rgba(244, 142, 84, 0.8); }
+        }
+
+        .orbiter {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            font-size: 1.4rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,1);
+            z-index: 12;
+        }
+
+        .orbiter-1 { animation: orbit1 8s infinite linear; color: var(--primary); }
+        .orbiter-2 { animation: orbit2 12s infinite linear; color: var(--secondary-1); }
+        .orbiter-3 { animation: orbit3 10s infinite linear; color: var(--secondary-2); }
+        .orbiter-4 { animation: orbit4 14s infinite linear; color: var(--primary); }
+
+        @keyframes orbit1 { 0% { transform: rotate(0deg) translateX(80px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(80px) rotate(-360deg); } }
+        @keyframes orbit2 { 0% { transform: rotate(120deg) translateX(230px) rotate(-120deg); } 100% { transform: rotate(480deg) translateX(230px) rotate(-480deg); } }
+        @keyframes orbit3 { 0% { transform: rotate(240deg) translateX(130px) rotate(-240deg); } 100% { transform: rotate(600deg) translateX(130px) rotate(-600deg); } }
+        @keyframes orbit4 { 0% { transform: rotate(45deg) translateX(180px) rotate(-45deg); } 100% { transform: rotate(405deg) translateX(180px) rotate(-405deg); } }
+
+        .start-btn {
+            padding: 20px 56px;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, var(--secondary-1), var(--secondary-2));
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 10px 30px rgba(244, 142, 84, 0.4);
+            position: relative;
+            z-index: 2;
+            animation: floatUp 1.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-5px) scale(1.03);
+            box-shadow: 0 15px 40px rgba(244, 142, 84, 0.5);
+        }
+
+        /* --- CRÉDITOS --- */
+        .credits {
+            position: absolute;
+            bottom: 25px;
+            text-align: center;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.6);
+            z-index: 10;
+            animation: floatUp 1.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .credits p {
+            margin-bottom: 5px;
+            font-weight: 300;
+        }
+
+        .credits a {
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .credits a:hover {
+            color: var(--secondary-1);
+        }
+
+        /* =========================================
+           WRAPPER DO QUIZ E ÁREAS INTERNAS
+           ========================================= */
+        .quiz-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: radial-gradient(circle at top right, #ffffff 0%, var(--bg-light) 100%);
+            z-index: 10;
+            overflow-y: auto; 
+        }
+
+        .quiz-inner {
+            max-width: 700px;
+            margin: 0 auto;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        /* --- TELA DE NOME --- */
+        .name-area { text-align: center; }
+        
+        .name-area h2 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 30px;
+            letter-spacing: -1px;
+        }
+
+        .name-input {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px 25px;
+            font-size: 1.5rem;
+            border: 2px solid #e2dcf2;
+            border-radius: 16px;
+            text-align: center;
+            outline: none;
+            color: var(--text-main);
+            background: #ffffff;
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+        }
+
+        .name-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(116, 99, 195, 0.15);
+        }
+
+        .name-input::placeholder { color: #c4bdcf; }
+
+        /* --- CABEÇALHO DO QUIZ --- */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        header h1 { 
+            font-size: 1.4rem; 
+            font-weight: 700;
+            color: var(--primary); 
+            letter-spacing: -0.5px;
+        }
+
+        .progress-text { 
+            font-size: 1rem; 
+            font-weight: 600;
+            color: var(--secondary-1); 
+            background: rgba(244, 142, 84, 0.1);
+            padding: 6px 16px;
+            border-radius: 20px;
+        }
+
+        .progress-bar { 
+            width: 100%; 
+            height: 8px; 
+            background-color: #e6e1f4; 
+            border-radius: 10px; 
+            overflow: hidden; 
+            margin-bottom: 25px;
+        }
+
+        .progress-fill { 
+            height: 100%; 
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark)); 
+            width: 0%; 
+            border-radius: 10px;
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+
+        /* --- TEMPORIZADOR --- */
+        .timer-container { margin-bottom: 35px; }
+
+        .timer-text {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--secondary-1);
+            text-align: right;
+            margin-bottom: 8px;
+            transition: color 0.3s ease;
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 6px;
+            background-color: #e6e1f4;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .timer-fill {
+            height: 100%;
+            background-color: var(--secondary-1);
+            width: 100%;
+            transition: width 1s linear, background-color 0.3s ease;
+        }
+
+        .text-urgent { color: var(--danger) !important; }
+        .fill-urgent { background-color: var(--danger) !important; }
+
+        /* --- ÁREA DAS PERGUNTAS --- */
+        .question-text { 
+            font-size: 1.6rem; 
+            font-weight: 600; 
+            line-height: 1.4;
+            margin-bottom: 40px; 
+            color: var(--text-main); 
+            min-height: 4em; 
+        }
+
+        .options-container { display: flex; flex-direction: column; gap: 15px; }
+        .options-container.disabled { pointer-events: none; }
+
+        .option {
+            background-color: #ffffff;
+            border: 2px solid #e2dcf2; 
+            border-radius: 16px;
+            padding: 20px 24px;
+            font-size: 1.15rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            opacity: 0; 
+            transform: translateY(15px);
+            animation: slideUpFade 0.4s forwards;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
+        }
+
+        @keyframes slideUpFade { to { opacity: 1; transform: translateY(0); } }
+        .option:nth-child(1) { animation-delay: 0.1s; }
+        .option:nth-child(2) { animation-delay: 0.2s; }
+        .option:nth-child(3) { animation-delay: 0.3s; }
+
+        .option:hover { 
+            border-color: #cbbbe6; 
+            background-color: #fcfbfe;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(116, 99, 195, 0.08);
+        }
+
+        .option.correct {
+            border-color: var(--success);
+            background-color: rgba(46, 204, 113, 0.08);
+            color: #27ae60;
+            box-shadow: 0 0 0 4px rgba(46, 204, 113, 0.15);
+            transform: scale(1.02);
+            z-index: 2;
+        }
+
+        .option.wrong {
+            border-color: var(--danger);
+            background-color: rgba(231, 76, 60, 0.08);
+            color: #c0392b;
+            box-shadow: 0 0 0 4px rgba(231, 76, 60, 0.15);
+        }
+
+        /* --- BOTÃO GENÉRICO --- */
+        .btn {
+            width: 100%;
+            padding: 20px;
+            margin-top: 30px;
+            border: none;
+            border-radius: 16px;
+            background: var(--primary);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover { 
+            background: var(--primary-dark); 
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(116, 99, 195, 0.2);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            margin-top: 15px;
+        }
+
+        .btn-outline:hover {
+            background: rgba(116, 99, 195, 0.05);
+            color: var(--primary-dark);
+            transform: translateY(-3px);
+        }
+
+        /* --- RESULTADO E RANKING --- */
+        .result-container, .ranking-container { text-align: center; }
+        
+        h2.section-title { 
+            font-size: 2.2rem;
+            margin-bottom: 15px; 
+            color: var(--primary); 
+        }
+        
+        .score-box {
+            background: #ffffff;
+            border: 2px solid #e2dcf2;
+            border-radius: 24px;
+            padding: 50px 30px;
+            margin: 30px 0;
+            box-shadow: 0 15px 40px rgba(116, 99, 195, 0.08);
+        }
+
+        .score-text { 
+            font-size: 5.5rem; 
+            font-weight: 700; 
+            color: var(--secondary-2); 
+            line-height: 1;
+        }
+
+        .score-total { font-size: 2rem; color: var(--text-muted); font-weight: 500; }
+        .feedback-msg { font-size: 1.6rem; margin-top: 25px; color: var(--secondary-1); font-weight: 600; }
+
+        /* Lista de Ranking ajustada para 30 itens com scroll suave */
+        .ranking-list {
+            list-style: none;
+            padding: 0;
+            margin: 30px 0;
+            text-align: left;
+            max-height: 50vh; /* Altura máxima adaptável para permitir o scroll de 30 itens */
+            overflow-y: auto;
+            border-radius: 16px;
+            padding-right: 10px; /* Espaço para a barra de rolagem */
+        }
+
+        /* Estilização da barra de rolagem para navegadores Webkit */
+        .ranking-list::-webkit-scrollbar { width: 8px; }
+        .ranking-list::-webkit-scrollbar-track { background: #f0ecf9; border-radius: 10px; }
+        .ranking-list::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
+
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 24px;
+            background: #ffffff;
+            border: 2px solid #e2dcf2;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--text-main);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        .player-info { display: flex; align-items: center; gap: 15px; }
+        .player-pos { font-weight: 700; color: var(--text-muted); font-size: 1.3rem; min-width: 35px; }
+        .player-score { font-weight: 700; color: var(--primary); font-size: 1.3rem; }
+
+        /* Destaques para o Top 3 */
+        .ranking-item.top-1 { border-color: #ffd700; background: #fffdf0; }
+        .ranking-item.top-1 .player-pos { color: #ffd700; }
+        .ranking-item.top-2 { border-color: #c0c0c0; background: #f8f9fa; }
+        .ranking-item.top-2 .player-pos { color: #a0a0a0; }
+        .ranking-item.top-3 { border-color: #cd7f32; background: #fdf5ef; }
+        .ranking-item.top-3 .player-pos { color: #cd7f32; }
+
+        @media (max-width: 768px) {
+            .landing-title { font-size: 3.5rem; }
+            .landing-subtitle { font-size: 1.1rem; margin-bottom: 40px; }
+            .science-animation-container { transform: scale(0.8); margin-bottom: 30px;}
+            .quiz-inner { padding: 30px 20px; }
+            .question-text { font-size: 1.3rem; }
+            .option { font-size: 1.05rem; padding: 16px; }
+            .name-area h2 { font-size: 2rem; }
+            .credits { font-size: 0.85rem; bottom: 15px; }
+            .ranking-list { max-height: 40vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="landing-page">
+        <div class="ambient-glow glow-1"></div>
+        <div class="ambient-glow glow-2"></div>
+        <div class="ambient-glow glow-3"></div>
+
+        <h1 class="landing-title">Elas Cientistas</h1>
+        <h2 class="landing-subtitle">Um tributo às Mulheres na Ciência</h2>
+
+        <div class="science-animation-container">
+            <div class="orbit-ring orbit-ring-1"></div>
+            <div class="orbit-ring orbit-ring-2"></div>
+            <div class="orbit-ring orbit-ring-3"></div>
+            <div class="orbit-ring orbit-ring-4"></div>
+            <div class="central-core"></div>
+            <div class="orbiter orbiter-1" title="Biologia">🧬</div>
+            <div class="orbiter orbiter-2" title="Física">⚛️</div>
+            <div class="orbiter orbiter-3" title="Astronomia">🌟</div>
+            <div class="orbiter orbiter-4" title="Química">🧪</div>
+        </div>
+
+        <button class="start-btn" id="start-btn">Iniciar Jornada!</button>
+
+        <div class="credits">
+            <p>Created by Marlon Borlot - Multimídia MOD II</p>
+            <a href="https://instagram.com/marlonborlot" target="_blank">@marlonborlot</a>
+        </div>
+    </div>
+
+    <div class="quiz-container" id="quiz-container">
+        <div class="quiz-inner">
+            
+            <div id="name-area" class="name-area fade-in">
+                <h2>Como devemos te chamar?</h2>
+                <input type="text" id="player-name" class="name-input" placeholder="Digite seu nome..." autocomplete="off" />
+                <button class="btn" id="confirm-name-btn">Pronto, começar!</button>
+            </div>
+
+            <div id="quiz-area" class="hidden">
+                <header>
+                    <h1>Mostre que sabe!</h1>
+                    <div class="progress-text" id="progress-text">1/10</div>
+                </header>
+
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+
+                <div class="timer-container">
+                    <div class="timer-text" id="timer-text">Tempo: 10s</div>
+                    <div class="timer-bar">
+                        <div class="timer-fill" id="timer-fill"></div>
+                    </div>
+                </div>
+
+                <div class="question-text" id="question-text">Carregando...</div>
+                
+                <div class="options-container" id="options-container">
+                </div>
+            </div>
+
+            <div id="result-area" class="result-container hidden">
+                <h2 class="section-title">Missão Concluída!</h2>
+                
+                <div class="score-box">
+                    <span class="score-text" id="score-text">0</span><span class="score-total">/10</span>
+                    <div class="feedback-msg" id="feedback-msg">Calculando...</div>
+                </div>
+                
+                <button class="btn" id="view-ranking-btn">Ver Ranking</button>
+            </div>
+
+            <div id="ranking-area" class="ranking-container hidden">
+                <h2 class="section-title">Top Cientistas</h2>
+                
+                <ul class="ranking-list" id="ranking-list">
+                </ul>
+                
+                <button class="btn btn-outline" id="home-btn">Voltar à Tela Inicial</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // BANCO COM 30 QUESTÕES
+        const allQuestions = [
+            { question: "Quem foi a primeira mulher a ganhar um Prêmio Nobel, e a única a ganhar em duas áreas científicas diferentes?", options: ["Marie Curie", "Rosalind Franklin", "Ada Lovelace"], answer: 0 },
+            { question: "Qual dessas cientistas é mundialmente reconhecida por seu trabalho crucial na descoberta da estrutura em dupla hélice do DNA?", options: ["Barbara McClintock", "Rosalind Franklin", "Jane Goodall"], answer: 1 },
+            { question: "A matemática Ada Lovelace é considerada a primeira pessoa na história a criar o quê?", options: ["Um algoritmo (programação)", "Uma teoria quântica", "Um telescópio refletor"], answer: 0 },
+            { question: "Katherine Johnson foi uma matemática afro-americana cujos cálculos orbitais manuais foram vitais para o sucesso de qual agência?", options: ["CERN", "Agência Espacial Europeia", "NASA"], answer: 2 },
+            { question: "A atriz de Hollywood Hedy Lamarr também foi uma brilhante inventora que codesenvolveu a tecnologia base para qual inovação moderna?", options: ["Wi-Fi e Bluetooth", "Baterias de Lítio", "Telas Touchscreen"], answer: 0 },
+            { question: "Jane Goodall revolucionou a ciência com seu estudo de longo prazo sobre o comportamento de qual animal?", options: ["Gorilas", "Chimpanzés", "Orangotangos"], answer: 1 },
+            { question: "Em 1963, Valentina Tereshkova fez história mundial ao se tornar a primeira mulher a:", options: ["Viajar para o espaço", "Vencer um Prêmio Nobel de Física", "Mergulhar na Fossa das Marianas"], answer: 0 },
+            { question: "Grace Hopper, pioneira da computação, popularizou qual termo após encontrar uma mariposa em um computador?", options: ["Glitch", "Bug", "Spam"], answer: 1 },
+            { question: "Lise Meitner foi fundamental para a descoberta teórica de qual processo físico revolucionário?", options: ["Fissão Nuclear", "Fusão Fria", "Efeito Fotoelétrico"], answer: 0 },
+            { question: "A astrofísica Jocelyn Bell Burnell foi a responsável por descobrir qual tipo intrigante de estrela de nêutrons?", options: ["Anã Branca", "Pulsares", "Quasares"], answer: 1 },
+            { question: "Tu Youyou ganhou o Nobel de Medicina ao descobrir a artemisinina, uma cura vital para qual doença?", options: ["Tuberculose", "Febre Amarela", "Malária"], answer: 2 },
+            { question: "Qual brilhante cientista mulher teve sua imagem recentemente eternizada na nota de 50 libras no Reino Unido por seu trabalho em cristalografia?", options: ["Dorothy Hodgkin", "Florence Nightingale", "Mary Anning"], answer: 0 },
+            { question: "Chien-Shiung Wu foi uma proeminente física experimental que derrubou a 'lei da paridade'. Ela era conhecida como a:", options: ["Primeira-dama da Física", "Mãe da Computação", "Senhora da Radiação"], answer: 0 },
+            { question: "Mae Jemison quebrou barreiras em 1992 ao se tornar a primeira:", options: ["Cirurgiã-chefe do mundo", "Mulher negra no espaço", "Ganhadora do Nobel de Química"], answer: 1 },
+            { question: "Mary Anning foi uma paleontóloga inglesa pioneira, famosa por suas importantes descobertas de:", options: ["Fósseis jurássicos", "Ruínas romanas", "Ferramentas neandertais"], answer: 0 },
+            { question: "A astrônoma Vera Rubin encontrou fortes evidências para provar a existência de quê, ao observar a rotação de galáxias?", options: ["Buracos Negros Supermassivos", "Matéria Escura", "Antimatéria"], answer: 1 },
+            { question: "Nettie Stevens foi a pesquisadora pioneira que descobriu que o sexo de um organismo é determinado por:", options: ["Cromossomos X e Y", "Fatores ambientais", "Dieta na gestação"], answer: 0 },
+            { question: "Emmanuelle Charpentier e Jennifer Doudna dividiram o Nobel de Química de 2020 pela descoberta de qual tecnologia revolucionária?", options: ["Edição genética CRISPR", "Vacinas de mRNA", "Células-tronco induzidas"], answer: 0 },
+            { question: "Katie Bouman desenvolveu o algoritmo crucial que permitiu que a humanidade capturasse a primeira imagem de um:", options: ["Exoplaneta distante", "Buraco Negro", "Cometa interestelar"], answer: 1 },
+            { question: "Rachel Carson escreveu 'Primavera Silenciosa', livro que impulsionou o movimento global de preservação sobre:", options: ["O Perigo dos Agrotóxicos/DDT", "O Desmatamento da Amazônia", "A Caça às Baleias"], answer: 0 },
+            { question: "Maria Goeppert Mayer foi a segunda mulher (após Marie Curie) a ganhar o Nobel de Física, propondo um modelo para:", options: ["As camadas do núcleo atômico", "A expansão do universo", "O comportamento de quarks"], answer: 0 },
+            { question: "Alice Ball, uma química afro-americana, desenvolveu o primeiro tratamento eficaz para qual doença severa no início do século 20?", options: ["Hanseníase (Lepra)", "Gripe Espanhola", "Pólio"], answer: 0 },
+            { question: "Margaret Hamilton liderou o desenvolvimento do software de voo embarcado que garantiu o sucesso de qual missão histórica?", options: ["Apollo 11 (Pouso na Lua)", "Curiosity (Pouso em Marte)", "Sputnik 1"], answer: 0 },
+            { question: "Shirley Ann Jackson foi a primeira mulher negra a obter um doutorado no MIT. Sua pesquisa básica ajudou a criar:", options: ["Painéis solares", "Identificador de chamadas (Bina)", "Telas de plasma"], answer: 1 },
+            { question: "Bertha Lutz foi uma notável cientista brasileira e pioneira no movimento feminista. Qual era a sua área de estudo científico?", options: ["Zoologia (focada em anfíbios)", "Astrofísica", "Matemática Aplicada"], answer: 0 },
+            { question: "Gertrude Elion desenvolveu diversos medicamentos vitais, mudando o tratamento de qual doença?", options: ["Leucemia", "Diabetes infantil", "Alzheimer"], answer: 0 },
+            { question: "Mary Jackson quebrou a barreira racial e de gênero para se tornar a primeira mulher negra a trabalhar como:", options: ["Engenheira na NASA", "Física Nuclear em Los Alamos", "Astronauta na Estação Espacial"], answer: 0 },
+            { question: "Rita Levi-Montalcini, Nobel de Medicina, fez sua descoberta crucial sobre o fator de crescimento nervoso (NGF) enquanto trabalhava onde durante a Segunda Guerra?", options: ["Em um laboratório secreto", "No seu próprio quarto", "Num navio hospitalar"], answer: 1 },
+            { question: "A Dra. Gerty Cori foi a primeira mulher nos EUA a ganhar o Nobel, mapeando o 'Ciclo de Cori', que estuda como nosso corpo processa:", options: ["Gorduras", "Carboidratos (Glicose/Ácido Lático)", "Proteínas"], answer: 1 },
+            { question: "Barbara McClintock descobriu os 'transposons' (genes saltadores), mostrando que o genoma não é estático. Ela estudou isso em qual planta?", options: ["Ervilhas", "Milho", "Trigo"], answer: 1 }
+        ];
+
+        let gameQuestions = []; 
+        const TOTAL_QUESTIONS_PER_GAME = 10;
+        
+        let playerName = "Anônimo";
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let timerInterval;
+        const TIME_LIMIT = 25;
+        let timeLeft = TIME_LIMIT;
+
+        // Seletores
+        const landingPage = document.getElementById('landing-page');
+        const startBtn = document.getElementById('start-btn');
+        const quizContainer = document.getElementById('quiz-container');
+        
+        const nameArea = document.getElementById('name-area');
+        const playerNameInput = document.getElementById('player-name');
+        const confirmNameBtn = document.getElementById('confirm-name-btn');
+        
+        const quizArea = document.getElementById('quiz-area');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const progressText = document.getElementById('progress-text');
+        const progressFill = document.getElementById('progress-fill');
+        const timerText = document.getElementById('timer-text');
+        const timerFill = document.getElementById('timer-fill');
+
+        const resultArea = document.getElementById('result-area');
+        const scoreText = document.getElementById('score-text');
+        const feedbackMsg = document.getElementById('feedback-msg');
+        const viewRankingBtn = document.getElementById('view-ranking-btn');
+
+        const rankingArea = document.getElementById('ranking-area');
+        const rankingList = document.getElementById('ranking-list');
+        const homeBtn = document.getElementById('home-btn');
+
+        // FUNÇÕES AUXILIARES
+        function shuffleAndSelectQuestions() {
+            let shuffled = [...allQuestions];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled.slice(0, TOTAL_QUESTIONS_PER_GAME);
+        }
+
+        function showSection(sectionToShow) {
+            nameArea.classList.add('hidden');
+            quizArea.classList.add('hidden');
+            resultArea.classList.add('hidden');
+            rankingArea.classList.add('hidden');
+            
+            sectionToShow.classList.remove('hidden');
+            sectionToShow.classList.add('fade-in');
+        }
+
+        // FLUXO DO JOGO
+        startBtn.addEventListener('click', () => {
+            // Esconde Landing Page e mostra tela de Nome
+            landingPage.style.opacity = '0';
+            landingPage.style.transform = 'scale(1.05)';
+            landingPage.style.visibility = 'hidden';
+            document.body.style.overflow = 'auto';
+
+            setTimeout(() => {
+                quizContainer.style.display = 'block';
+                showSection(nameArea);
+                playerNameInput.focus();
+            }, 600);
+        });
+
+        function initiateQuiz() {
+            // Pega o nome e inicia o jogo
+            playerName = playerNameInput.value.trim();
+            if(!playerName) playerName = "Cientista Anônimo";
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            gameQuestions = shuffleAndSelectQuestions();
+            
+            showSection(quizArea);
+            loadQuestion();
+        }
+
+        confirmNameBtn.addEventListener('click', initiateQuiz);
+        playerNameInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') initiateQuiz();
+        });
+
+        // TEMPORIZADOR E QUIZ
+        function startTimer() {
+            clearInterval(timerInterval);
+            timeLeft = TIME_LIMIT;
+            
+            timerText.textContent = `Tempo: ${timeLeft}s`;
+            timerText.classList.remove('text-urgent');
+            timerFill.classList.remove('fill-urgent');
+            
+            timerFill.style.transition = 'none';
+            timerFill.style.width = '100%';
+            
+            setTimeout(() => {
+                timerFill.style.transition = 'width 1s linear, background-color 0.3s ease';
+            }, 50);
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerText.textContent = `Tempo: ${timeLeft}s`;
+                
+                const percentage = (timeLeft / TIME_LIMIT) * 100;
+                timerFill.style.width = `${percentage}%`;
+
+                if (timeLeft <= 3) {
+                    timerText.classList.add('text-urgent');
+                    timerFill.classList.add('fill-urgent');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    handleTimeOut();
+                }
+            }, 1000);
+        }
+
+        function loadQuestion() {
+            optionsContainer.classList.remove('disabled');
+            const currentQ = gameQuestions[currentQuestionIndex];
+            
+            questionText.style.opacity = 0;
+            setTimeout(() => {
+                questionText.textContent = currentQ.question;
+                questionText.style.opacity = 1;
+                questionText.style.transition = "opacity 0.3s ease";
+            }, 150);
+            
+            updateProgress();
+            
+            optionsContainer.innerHTML = '';
+            currentQ.options.forEach((option, index) => {
+                const button = document.createElement('div');
+                button.classList.add('option');
+                button.textContent = option;
+                button.onclick = () => processAnswer(button, index);
+                optionsContainer.appendChild(button);
+            });
+
+            startTimer();
+        }
+
+        function processAnswer(selectedElement, index) {
+            clearInterval(timerInterval); 
+            optionsContainer.classList.add('disabled'); 
+
+            const currentQ = gameQuestions[currentQuestionIndex];
+            const allOptions = optionsContainer.querySelectorAll('.option');
+
+            if (index === currentQ.answer) {
+                score++;
+                selectedElement.classList.add('correct');
+            } else {
+                selectedElement.classList.add('wrong');
+                allOptions[currentQ.answer].classList.add('correct');
+            }
+
+            setTimeout(nextQuestion, 1500);
+        }
+
+        function handleTimeOut() {
+            optionsContainer.classList.add('disabled');
+            const currentQ = gameQuestions[currentQuestionIndex];
+            const allOptions = optionsContainer.querySelectorAll('.option');
+            
+            if(allOptions[currentQ.answer]) {
+                allOptions[currentQ.answer].classList.add('correct');
+            }
+
+            setTimeout(nextQuestion, 1500);
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < gameQuestions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateProgress() {
+            const total = gameQuestions.length;
+            progressText.textContent = `Questão ${currentQuestionIndex + 1} de ${total}`;
+            const percentage = ((currentQuestionIndex) / total) * 100;
+            progressFill.style.width = `${percentage}%`;
+        }
+
+        function showResults() {
+            clearInterval(timerInterval);
+            showSection(resultArea);
+            progressFill.style.width = '100%';
+
+            let currentScoreCount = 0;
+            
+            if(score === 0) {
+                scoreText.textContent = 0;
+                feedbackMsg.textContent = "Acabou o tempo ou não teve sorte. Continue tentando! 💡";
+                return;
+            }
+
+            const scoreInterval = setInterval(() => {
+                scoreText.textContent = currentScoreCount;
+                if (currentScoreCount >= score) {
+                    clearInterval(scoreInterval);
+                    if (score <= 3) {
+                        feedbackMsg.textContent = "Há muita história para descobrir. Tente novamente! 💡";
+                    } else if (score <= 7) {
+                        feedbackMsg.textContent = "Ótimo trabalho! Você conhece as pioneiras. 👏";
+                    } else {
+                        feedbackMsg.textContent = "Fantástico! Um verdadeiro especialista! 🏆";
+                    }
+                } else {
+                    currentScoreCount++;
+                }
+            }, 100);
+        }
+
+        // SISTEMA DE RANKING (LocalStorage)
+        function saveToRanking() {
+            let leaderboard = JSON.parse(localStorage.getItem('elesCientistasRank')) || [];
+            leaderboard.push({ name: playerName, score: score });
+            
+            // Ordena do maior pro menor
+            leaderboard.sort((a, b) => b.score - a.score);
+            
+            localStorage.setItem('elesCientistasRank', JSON.stringify(leaderboard));
+            return leaderboard;
+        }
+
+        function renderRanking() {
+            const leaderboard = saveToRanking();
+            rankingList.innerHTML = '';
+            
+            // Pega os Top 30 agora, conforme solicitado
+            const top30 = leaderboard.slice(0, 30);
+            
+            top30.forEach((entry, index) => {
+                const li = document.createElement('li');
+                li.className = 'ranking-item';
+                
+                // Medallas para o Top 3
+                let posIcon = `${index + 1}º`;
+                if(index === 0) { li.classList.add('top-1'); posIcon = '🥇'; }
+                else if(index === 1) { li.classList.add('top-2'); posIcon = '🥈'; }
+                else if(index === 2) { li.classList.add('top-3'); posIcon = '🥉'; }
+
+                li.innerHTML = `
+                    <div class="player-info">
+                        <span class="player-pos">${posIcon}</span>
+                        <span class="player-name">${entry.name}</span>
+                    </div>
+                    <span class="player-score">${entry.score}/10</span>
+                `;
+                rankingList.appendChild(li);
+            });
+        }
+
+        viewRankingBtn.addEventListener('click', () => {
+            renderRanking();
+            showSection(rankingArea);
+        });
+
+        // VOLTAR PARA TELA INICIAL
+        homeBtn.addEventListener('click', () => {
+            quizContainer.style.display = 'none';
+            playerNameInput.value = ''; 
+            
+            landingPage.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            // Refaz a animação de entrada da Home
+            setTimeout(() => {
+                landingPage.style.visibility = 'visible';
+                landingPage.style.opacity = '1';
+                landingPage.style.transform = 'scale(1)';
+            }, 50);
+        });
+
+	// Registra o Service Worker para o PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registrado com sucesso!'))
+                    .catch(err => console.log('Erro ao registrar Service Worker:', err));
+            });
+        }
+
+    </script>
+</body>
+</html>
