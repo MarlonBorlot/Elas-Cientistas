@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elas Cientistas - Quiz</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#7463C3">
+    <link rel="apple-touch-icon" href="icon-192.png">
     
     <style>
         /* =========================================
@@ -986,6 +989,15 @@
                 landingPage.style.transform = 'scale(1)';
             }, 50);
         });
+
+        // Registra o Service Worker para o PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registrado com sucesso!'))
+                    .catch(err => console.log('Erro ao registrar Service Worker:', err));
+            });
+        }
 
     </script>
 </body>
