@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#7463C3">
     <link rel="apple-touch-icon" href="icon-192.png">
-    
+
     <style>
         /* =========================================
            CSS GERAL E RESET
@@ -393,6 +393,7 @@
         .option:nth-child(1) { animation-delay: 0.1s; }
         .option:nth-child(2) { animation-delay: 0.2s; }
         .option:nth-child(3) { animation-delay: 0.3s; }
+        .option:nth-child(4) { animation-delay: 0.4s; }
 
         .option:hover { 
             border-color: #cbbbe6; 
@@ -452,7 +453,6 @@
         }
 
         /* --- RESULTADO E RANKING --- */
-        /* Ajuste: position relative no ranking-container para ancorar o botão sutil */
         .result-container { text-align: center; }
         .ranking-container { text-align: center; position: relative; }
         
@@ -462,23 +462,22 @@
             color: var(--primary); 
         }
 
-        /* Botão sutil de refresh no ranking */
         .subtle-refresh-btn {
             position: absolute;
-            top: 5px;
-            right: 0px;
+            top: 10px;
+            right: 10px;
             background: transparent;
             border: none;
             color: #c4bdcf;
-            font-size: 1.5rem;
+            font-size: 1.1rem;
             cursor: pointer;
             opacity: 0.1;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
             outline: none;
         }
 
         .subtle-refresh-btn:hover {
-            opacity: 1;
+            opacity: 0.6;
             color: var(--danger);
             transform: rotate(180deg);
         }
@@ -514,7 +513,6 @@
             padding-right: 10px; 
         }
 
-        /* Estilização da barra de rolagem para navegadores Webkit */
         .ranking-list::-webkit-scrollbar { width: 8px; }
         .ranking-list::-webkit-scrollbar-track { background: #f0ecf9; border-radius: 10px; }
         .ranking-list::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
@@ -538,7 +536,6 @@
         .player-pos { font-weight: 700; color: var(--text-muted); font-size: 1.3rem; min-width: 35px; }
         .player-score { font-weight: 700; color: var(--primary); font-size: 1.3rem; }
 
-        /* Destaques para o Top 3 */
         .ranking-item.top-1 { border-color: #ffd700; background: #fffdf0; }
         .ranking-item.top-1 .player-pos { color: #ffd700; }
         .ranking-item.top-2 { border-color: #c0c0c0; background: #f8f9fa; }
@@ -647,38 +644,40 @@
     </div>
 
     <script>
-        // BANCO COM 30 QUESTÕES
+        // BANCO COM 30 QUESTÕES (Com 4 alternativas agora)
         const allQuestions = [
-          { question: "Quem foi a primeira mulher a ganhar um Prêmio Nobel, famosa por seus estudos sobre radiação?", options: ["Marie Curie", "Ada Lovelace", "Rosalind Franklin"], answer: 0 },
-            { question: "A matemática Ada Lovelace é conhecida mundialmente por ser a primeira pessoa a escrever o quê?", options: ["Um livro de física", "Um código de computador", "Uma receita médica"], answer: 1 },
-            { question: "A cientista Jane Goodall é famosa por passar décadas estudando o comportamento de qual animal na África?", options: ["Leões", "Elefantes", "Chimpanzés"], answer: 2 },
-            { question: "Valentina Tereshkova entrou para a história em 1963 ao ser a primeira mulher a:", options: ["Viajar para o espaço", "Ganhar um Nobel", "Descobrir um planeta"], answer: 0 },
-            { question: "Katherine Johnson foi uma brilhante matemática que ajudou qual agência a levar o homem à Lua?", options: ["Agência Espacial Europeia", "NASA", "Roscosmos"], answer: 1 },
-            { question: "Rosalind Franklin tirou a famosa 'Foto 51', que foi fundamental para descobrir o formato de qual molécula?", options: ["Proteína", "Colesterol", "DNA"], answer: 2 },
-            { question: "A atriz Hedy Lamarr também foi inventora. Sua invenção ajudou a criar quais tecnologias que usamos no celular?", options: ["Wi-Fi e Bluetooth", "Câmera digital", "Tela sensível ao toque"], answer: 0 },
-            { question: "Margaret Hamilton liderou a equipe que programou o computador de qual famosa missão espacial?", options: ["Sonda Voyager", "Apollo 11 (Pouso na Lua)", "Missão a Marte"], answer: 1 },
-            { question: "Mae Jemison fez história na NASA em 1992 ao se tornar a primeira:", options: ["Piloto de avião comercial", "Mulher a pisar na Lua", "Mulher negra a ir para o espaço"], answer: 2 },
-            { question: "Mary Anning, quando criança, encontrou o primeiro fóssil de um ictiossauro. Qual era a profissão dela?", options: ["Paleontóloga", "Médica", "Engenheira"], answer: 0 },
-            { question: "Qual médica psiquiatra brasileira revolucionou o tratamento mental usando a arte em vez de eletrochoques?", options: ["Bertha Lutz", "Nise da Silveira", "Marie Curie"], answer: 1 },
-            { question: "Katie Bouman ajudou a criar o programa de computador que conseguiu tirar a primeira foto real de um:", options: ["Cometa", "Extraterrestre", "Buraco Negro"], answer: 2 },
-            { question: "Florence Nightingale é considerada a fundadora de qual profissão, graças à sua higiene nos hospitais?", options: ["Enfermagem", "Odontologia", "Fisioterapia"], answer: 0 },
-            { question: "Rachel Carson escreveu o livro 'Primavera Silenciosa', que ajudou a criar o movimento de proteção ao:", options: ["Oceano profundo", "Meio ambiente", "Espaço sideral"], answer: 1 },
-            { question: "Bertha Lutz foi uma cientista brasileira que estudou sapos e pererecas, área conhecida como:", options: ["Astronomia", "Botânica", "Zoologia"], answer: 2 },
-            { question: "Chien-Shiung Wu ajudou a mudar a forma como entendemos a física. Como ela era carinhosamente chamada?", options: ["A Primeira-Dama da Física", "A Rainha das Estrelas", "A Mãe da Internet"], answer: 0 },
-            { question: "Shirley Ann Jackson fez pesquisas que ajudaram a inventar qual tecnologia usada em telefones?", options: ["O fone de ouvido sem fio", "O identificador de chamadas (Bina)", "A câmera frontal"], answer: 1 },
-            { question: "Sylvia Earle foi uma bióloga marinha que passou milhares de horas debaixo d'água defendendo os:", options: ["Desertos", "Vulcões", "Oceanos"], answer: 2 },
-            { question: "A química Alice Ball descobriu, com apenas 23 anos, o primeiro tratamento eficaz para qual doença?", options: ["Hanseníase (Lepra)", "Gripe", "Asma"], answer: 0 },
-            { question: "Tu Youyou encontrou a cura para a malária estudando textos de medicina tradicional de qual país?", options: ["Brasil", "China", "Índia"], answer: 1 },
-            { question: "Jocelyn Bell Burnell descobriu estrelas que piscam emitindo ondas de rádio. Como são chamadas?", options: ["Anãs Brancas", "Cometas", "Pulsares"], answer: 2 },
-            { question: "O que a bióloga Maria Sibylla Merian fazia de forma pioneira para estudar insetos e plantas?", options: ["Ela os desenhava com muitos detalhes", "Ela os congelava no gelo", "Ela os enviava para o espaço"], answer: 0 },
-            { question: "A química Stephanie Kwolek inventou um material usado em coletes à prova de balas chamado:", options: ["Plástico", "Kevlar", "Borracha"], answer: 1 },
-            { question: "Emmanuelle Charpentier e Jennifer Doudna ganharam o Nobel por criarem uma 'tesoura' que corta o quê?", options: ["O cabelo", "O papel", "O DNA"], answer: 2 },
-            { question: "Marie Tharp criou o primeiro mapa científico de qual parte do nosso planeta?", options: ["O fundo dos oceanos", "O topo das montanhas", "O interior dos vulcões"], answer: 0 },
-            { question: "Grace Hopper ajudou a criar linguagens de programação. Qual animal ela encontrou no computador (o 1º 'bug')?", options: ["Uma aranha", "Uma mariposa", "Uma formiga"], answer: 1 },
-            { question: "Gladys West foi uma das matemáticas que fez os cálculos essenciais para criar qual sistema de localização?", options: ["Wi-Fi", "5G", "GPS"], answer: 2 },
-            { question: "Mary Jackson foi a primeira mulher negra a conseguir o cargo de engenheira em qual instituição?", options: ["NASA", "ONU", "OMS"], answer: 0 },
-            { question: "Rita Levi-Montalcini estudou as células do cérebro. Onde ela montou seu laboratório na Segunda Guerra?", options: ["Em uma caverna", "No seu próprio quarto", "Em um navio"], answer: 1 },
-            { question: "Qual elemento químico super radioativo foi descoberto por Marie Curie e seu marido Pierre?", options: ["Ouro", "Oxigênio", "Rádio"], answer: 2 }
+            { question: "Bertha Lutz ficou conhecida por sua atuação em qual área da ciência", options: ["Biologia", "Astronomia", "Engenharia", "Matemática"], answer: 0 },
+            { question: "Além de cientista, Bertha Lutz também foi importante na luta por qual direito?", options: ["Direito ao voto feminino", "Direito ao transporte gratuito", "Direito à internet", "Direito ao esporte"], answer: 0 },
+            { question: "Bertha Lutz ajudou a fundar qual movimento?", options: ["Federação Brasileira pelo Progresso Feminino", "Academia Brasileira de Letras", "Museu de Imagens do Inconsciente", "Instituto Nacional de Matemática"], answer: 0 },
+            { question: "O legado de Bertha Lutz permanece vivo em nomes de ruas, escolas e até:", options: ["Espécies animais", "Planetas", "Satélites", "Navios"], answer: 0 },
+            { question: "Nise da Silveira atuou principalmente em qual área da medicina?", options: ["Psiquiatria", "Pediatria", "Cardiologia", "Dermatologia"], answer: 0 },
+            { question: "Nise da Silveira ficou conhecida por combater métodos considerados:", options: ["Violentos", "Modernos", "Digitais", "Esportivos"], answer: 0 },
+            { question: "Para Nise da Silveira, o cuidado com pacientes deveria envolver:", options: ["Afeto, escuta e respeito", "Castigo e isolamento", "Competição e força", "Pressa e silêncio"], answer: 0 },
+            { question: "Nise utilizou qual linguagem como forma de tratamento e expressão?", options: ["Arte", "Cálculo financeiro", "Programação", "Arquitetura"], answer: 0 },
+            { question: "O trabalho de Nise deu origem a qual importante espaço?", options: ["Museu de Imagens do Inconsciente", "Museu do Futebol", "Museu da Língua Portuguesa", " Museu Nacional do Rádio"], answer: 0 },
+            { question: "A trajetória de Nise da Silveira mostra que a ciência também pode ser:", options: ["Humana e transformadora", "Fria e distante", "Rápida e automática", "Secreta e individual"], answer: 0 },
+	
+            { question: "Katherine Johnson ficou conhecida por trabalhar em qual instituição?", options: ["NASA", "ONU", "UNESCO", "Cruz Vermelha"], answer: 0 },
+            { question: "Katherine Johnson era especialista em qual área?", options: ["Matemática", "Medicina", "Jornalismo", "Música"], answer: 0 },
+            { question: "Katherine enfrentou barreiras por ser:", options: ["Mulher e negra", "Estrangeira e atleta", " Criança e artista", "Médica e cantora"], answer: 0 },
+            { question: "O trabalho de Katherine foi importante para missões:", options: ["Espaciais", "Agrícolas", "Militares terrestres", "Teatrais"], answer: 0 },
+            { question: "Katherine ajudou com cálculos para a missão de qual astronauta?", options: ["John Glenn", "Santos Dumont", "Albert Einstein", "Charles Darwin"], answer: 0 },
+            { question: "A missão Apollo 11 ficou conhecida por levar o ser humano:", options: ["À Lua", "Ao fundo do mar", "Ao centro da Terra", "Ao Polo Norte"], answer: 0 },
+            { question: "Marie Curie foi uma cientista das áreas de:", options: [" Física e Química", "História e Geografia", "Música e Dança", "Direito e Administração"], answer: 0 },
+            { question: "Marie Curie ficou mundialmente conhecida por seus estudos sobre:", options: ["Radioatividade", "Botânica", "Literatura", "Oceanografia"], answer: 0 },
+            { question: "Marie Curie participou da descoberta do polônio e do:", options: ["Rádio", "Ferro", "Oxigênio", "Cálcio"], answer: 0 },
+            { question: "Marie Curie foi a primeira mulher a ganhar:", options: [" Um Prêmio Nobel", "Uma Copa do Mundo", "Um Oscar", "Uma medalha olímpica"], answer: 0 },
+
+            { question: "Marie Curie nasceu em qual país?", options: ["Polônia", "Brasil", "Estados Unidos", "Inglaterra"], answer: 0 },
+            { question: "Marie Curie se naturalizou em qual país?", options: ["Fraça", "Alemanha", "Itália", "Portugal"], answer: 0 },
+            { question: "Marie Curie recebeu dois Prêmios Nobel em áreas diferentes: Física e:", options: ["Química", "Medicina", "Literatura", "Paz"], answer: 0 },
+            { question: "O trabalho de Marie Curie abriu caminhos para avanços na medicina, na física e na:", options: ["Química", "Arquitetura", "Música", "Publicidade"], answer: 0 },
+            { question: "O que unia as histórias dessas cientistas?", options: ["Coragem e persistência", "Fama na televisão", "Carreira esportiva", "Vida sem dificuldades"], answer: 0 },
+            { question: "Bertha Lutz, Nise da Silveira, Katherine Johnson e Marie Curie enfrentaram principalmente:", options: ["Barreiras sociais e de gênero", "Falta de planetas para estudar", "Competições musicais", "Provas de culinária"], answer: 0 },
+            { question: "Qual dessas mulheres se destacou na luta pelo voto feminino no Brasil?", options: ["Bertha Lutz", "Katherine Johnson", "Marie Curie", "Nise da Silveira"], answer: 0 },
+            { question: "Qual dessas mulheres usou a arte como forma de cuidado em saúde mental?", options: ["Nise da Silveira", "Marie Curie", "Bertha Lutz", "Katherine Johnson"], answer: 0 },
+            { question: "Qual dessas mulheres contribuiu para cálculos de missões espaciais?", options: ["Katherine Johnson", "Nise da Silveira", "Bertha Lutz", " Marie Curie"], answer: 0 },
+            { question: "Qual dessas mulheres ficou marcada pela pesquisa sobre radioatividade?", options: ["Marie Curie", "Bertha Lutz", "Nise da Silveira", "Katherine Johnson"], answer: 0 }
         ];
 
         let gameQuestions = []; 
@@ -716,9 +715,10 @@
         const rankingArea = document.getElementById('ranking-area');
         const rankingList = document.getElementById('ranking-list');
         const homeBtn = document.getElementById('home-btn');
-        const clearRankingBtn = document.getElementById('clear-ranking-btn'); // Novo seletor
+        const clearRankingBtn = document.getElementById('clear-ranking-btn');
 
         // FUNÇÕES AUXILIARES
+        // 1. Embaralha a ordem das perguntas para o quiz
         function shuffleAndSelectQuestions() {
             let shuffled = [...allQuestions];
             for (let i = shuffled.length - 1; i > 0; i--) {
@@ -740,7 +740,6 @@
 
         // FLUXO DO JOGO
         startBtn.addEventListener('click', () => {
-            // Esconde Landing Page e mostra tela de Nome
             landingPage.style.opacity = '0';
             landingPage.style.transform = 'scale(1.05)';
             landingPage.style.visibility = 'hidden';
@@ -754,7 +753,6 @@
         });
 
         function initiateQuiz() {
-            // Pega o nome e inicia o jogo
             playerName = playerNameInput.value.trim();
             if(!playerName) playerName = "Cientista Anônimo";
             
@@ -818,32 +816,57 @@
             }, 150);
             
             updateProgress();
-            
             optionsContainer.innerHTML = '';
-            currentQ.options.forEach((option, index) => {
+            
+            // 2. Mapeia as opções com seu status de 'correta' original
+            let optionsWithState = currentQ.options.map((opt, idx) => {
+                return {
+                    text: opt,
+                    isCorrect: (idx === currentQ.answer)
+                };
+            });
+
+            // 3. Embaralha as alternativas usando o mesmo algoritmo
+            for (let i = optionsWithState.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [optionsWithState[i], optionsWithState[j]] = [optionsWithState[j], optionsWithState[i]];
+            }
+
+            // 4. Renderiza na tela
+            optionsWithState.forEach((optionObj) => {
                 const button = document.createElement('div');
                 button.classList.add('option');
-                button.textContent = option;
-                button.onclick = () => processAnswer(button, index);
+                button.textContent = optionObj.text;
+                
+                // Salva uma "tag" oculta se for a opção certa
+                if (optionObj.isCorrect) {
+                    button.dataset.correct = "true";
+                }
+
+                // Passa para a verificação o status booleano
+                button.onclick = () => processAnswer(button, optionObj.isCorrect);
                 optionsContainer.appendChild(button);
             });
 
             startTimer();
         }
 
-        function processAnswer(selectedElement, index) {
+        function processAnswer(selectedElement, isCorrect) {
             clearInterval(timerInterval); 
             optionsContainer.classList.add('disabled'); 
 
-            const currentQ = gameQuestions[currentQuestionIndex];
-            const allOptions = optionsContainer.querySelectorAll('.option');
-
-            if (index === currentQ.answer) {
+            if (isCorrect) {
+                // Acertou
                 score++;
                 selectedElement.classList.add('correct');
             } else {
+                // Errou: Pinta a selecionada de vermelho...
                 selectedElement.classList.add('wrong');
-                allOptions[currentQ.answer].classList.add('correct');
+                // ...e acha qual era a correta para pintar de verde
+                const correctOption = optionsContainer.querySelector('[data-correct="true"]');
+                if (correctOption) {
+                    correctOption.classList.add('correct');
+                }
             }
 
             setTimeout(nextQuestion, 1500);
@@ -851,11 +874,11 @@
 
         function handleTimeOut() {
             optionsContainer.classList.add('disabled');
-            const currentQ = gameQuestions[currentQuestionIndex];
-            const allOptions = optionsContainer.querySelectorAll('.option');
             
-            if(allOptions[currentQ.answer]) {
-                allOptions[currentQ.answer].classList.add('correct');
+            // Procura a opção certa e marca quando o tempo acaba
+            const correctOption = optionsContainer.querySelector('[data-correct="true"]');
+            if (correctOption) {
+                correctOption.classList.add('correct');
             }
 
             setTimeout(nextQuestion, 1500);
@@ -911,22 +934,17 @@
         function saveToRanking() {
             let leaderboard = JSON.parse(localStorage.getItem('elesCientistasRank')) || [];
             
-            // Só salva se houver uma pontuação ou jogada válida
             if(playerName) {
                 leaderboard.push({ name: playerName, score: score });
             }
             
-            // Ordena do maior pro menor
             leaderboard.sort((a, b) => b.score - a.score);
-            
             localStorage.setItem('elesCientistasRank', JSON.stringify(leaderboard));
             return leaderboard;
         }
 
         function renderRanking() {
-            // Se for ver o ranking diretamente sem jogar, não salva pontuação nova
             let leaderboard = JSON.parse(localStorage.getItem('elesCientistasRank')) || [];
-            
             rankingList.innerHTML = '';
             
             if(leaderboard.length === 0) {
@@ -934,14 +952,12 @@
                 return;
             }
 
-            // Pega os Top 30
             const top30 = leaderboard.slice(0, 30);
             
             top30.forEach((entry, index) => {
                 const li = document.createElement('li');
                 li.className = 'ranking-item';
                 
-                // Medallas para o Top 3
                 let posIcon = `${index + 1}º`;
                 if(index === 0) { li.classList.add('top-1'); posIcon = '🥇'; }
                 else if(index === 1) { li.classList.add('top-2'); posIcon = '🥈'; }
@@ -958,15 +974,13 @@
             });
         }
 
-        // Evento para ver o ranking e salvar a pontuação atual
         viewRankingBtn.addEventListener('click', () => {
-            saveToRanking(); // Salva a pontuação da rodada atual
-            playerName = ""; // Reseta o nome para não salvar duplicado se clicar de novo
+            saveToRanking(); 
+            playerName = ""; 
             renderRanking();
             showSection(rankingArea);
         });
 
-        // Evento para o botão de limpar ranking
         clearRankingBtn.addEventListener('click', () => {
             if(confirm("Tem certeza que deseja apagar todo o ranking?")) {
                 localStorage.removeItem('elesCientistasRank');
@@ -982,15 +996,14 @@
             landingPage.style.display = 'flex';
             document.body.style.overflow = 'hidden';
             
-            // Refaz a animação de entrada da Home
             setTimeout(() => {
                 landingPage.style.visibility = 'visible';
                 landingPage.style.opacity = '1';
                 landingPage.style.transform = 'scale(1)';
             }, 50);
         });
-
-        // Registra o Service Worker para o PWA
+	
+	// Registra o Service Worker para o PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
