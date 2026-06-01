@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elas Cientistas - Quiz</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#7463C3">
-    <link rel="apple-touch-icon" href="icon-192.png">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
@@ -452,12 +449,35 @@
         }
 
         /* --- RESULTADO E RANKING --- */
-        .result-container, .ranking-container { text-align: center; }
+        /* Ajuste: position relative no ranking-container para ancorar o botão sutil */
+        .result-container { text-align: center; }
+        .ranking-container { text-align: center; position: relative; }
         
         h2.section-title { 
             font-size: 2.2rem;
             margin-bottom: 15px; 
             color: var(--primary); 
+        }
+
+        /* Botão sutil de refresh no ranking */
+        .subtle-refresh-btn {
+            position: absolute;
+            top: 5px;
+            right: 0px;
+            background: transparent;
+            border: none;
+            color: #c4bdcf;
+            font-size: 1.5rem;
+            cursor: pointer;
+            opacity: 0.1;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .subtle-refresh-btn:hover {
+            opacity: 1;
+            color: var(--danger);
+            transform: rotate(180deg);
         }
         
         .score-box {
@@ -485,10 +505,10 @@
             padding: 0;
             margin: 30px 0;
             text-align: left;
-            max-height: 50vh; /* Altura máxima adaptável para permitir o scroll de 30 itens */
+            max-height: 50vh; 
             overflow-y: auto;
             border-radius: 16px;
-            padding-right: 10px; /* Espaço para a barra de rolagem */
+            padding-right: 10px; 
         }
 
         /* Estilização da barra de rolagem para navegadores Webkit */
@@ -570,7 +590,7 @@
         <div class="quiz-inner">
             
             <div id="name-area" class="name-area fade-in">
-                <h2>Como devemos te chamar?</h2>
+                <h2>Como devemos te chamar, cientista?</h2>
                 <input type="text" id="player-name" class="name-input" placeholder="Digite seu nome..." autocomplete="off" />
                 <button class="btn" id="confirm-name-btn">Pronto, começar!</button>
             </div>
@@ -610,6 +630,8 @@
             </div>
 
             <div id="ranking-area" class="ranking-container hidden">
+                <button id="clear-ranking-btn" class="subtle-refresh-btn" title="Limpar Ranking">↻</button>
+
                 <h2 class="section-title">Top Cientistas</h2>
                 
                 <ul class="ranking-list" id="ranking-list">
@@ -691,6 +713,7 @@
         const rankingArea = document.getElementById('ranking-area');
         const rankingList = document.getElementById('ranking-list');
         const homeBtn = document.getElementById('home-btn');
+        const clearRankingBtn = document.getElementById('clear-ranking-btn'); // Novo seletor
 
         // FUNÇÕES AUXILIARES
         function shuffleAndSelectQuestions() {
@@ -884,7 +907,11 @@
         // SISTEMA DE RANKING (LocalStorage)
         function saveToRanking() {
             let leaderboard = JSON.parse(localStorage.getItem('elesCientistasRank')) || [];
-            leaderboard.push({ name: playerName, score: score });
+            
+            // Só salva se houver uma pontuação ou jogada válida
+            if(playerName) {
+                leaderboard.push({ name: playerName, score: score });
+            }
             
             // Ordena do maior pro menor
             leaderboard.sort((a, b) => b.score - a.score);
@@ -894,10 +921,17 @@
         }
 
         function renderRanking() {
-            const leaderboard = saveToRanking();
+            // Se for ver o ranking diretamente sem jogar, não salva pontuação nova
+            let leaderboard = JSON.parse(localStorage.getItem('elesCientistasRank')) || [];
+            
             rankingList.innerHTML = '';
             
-            // Pega os Top 30 agora, conforme solicitado
+            if(leaderboard.length === 0) {
+                rankingList.innerHTML = '<li class="ranking-item" style="justify-content: center; color: var(--text-muted);">O ranking está vazio. Seja o primeiro a jogar!</li>';
+                return;
+            }
+
+            // Pega os Top 30
             const top30 = leaderboard.slice(0, 30);
             
             top30.forEach((entry, index) => {
@@ -921,9 +955,20 @@
             });
         }
 
+        // Evento para ver o ranking e salvar a pontuação atual
         viewRankingBtn.addEventListener('click', () => {
+            saveToRanking(); // Salva a pontuação da rodada atual
+            playerName = ""; // Reseta o nome para não salvar duplicado se clicar de novo
             renderRanking();
             showSection(rankingArea);
+        });
+
+        // Evento para o botão de limpar ranking
+        clearRankingBtn.addEventListener('click', () => {
+            if(confirm("Tem certeza que deseja apagar todo o ranking?")) {
+                localStorage.removeItem('elesCientistasRank');
+                renderRanking();
+            }
         });
 
         // VOLTAR PARA TELA INICIAL
@@ -941,15 +986,6 @@
                 landingPage.style.transform = 'scale(1)';
             }, 50);
         });
-
-	// Registra o Service Worker para o PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('Service Worker registrado com sucesso!'))
-                    .catch(err => console.log('Erro ao registrar Service Worker:', err));
-            });
-        }
 
     </script>
 </body>
